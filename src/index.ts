@@ -59,8 +59,13 @@ app.post("/api/entry", async (req, res) => {
     return res.status(400).json({ ok: false, error: "Missing userId/topic" });
   }
 
+  const targetTopic = getTopicByKey(topic);
+  if (!targetTopic) {
+    return res.status(400).json({ ok: false, error: "Invalid topic" });
+  }
+
   userState.set(userId, { topic }, { ttlMs: Time.oneHour * 3 });
-  sendPushMessage({ userId, message: `你已進入主題: ${topic}` });
+  sendPushMessage({ userId, message: `你已進入主題: ${targetTopic.label}` });
 
   return res.json({ ok: true });
 });
